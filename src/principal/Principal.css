@@ -1,0 +1,234 @@
+/* PaginaPrincipal.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+:root {
+  --color-primario: #3f51b5;
+  --color-secundario: #303f9f;
+  --color-acento: #ff7043;
+  --color-texto: #212121;
+  --color-texto-claro: #ffffff;
+  --color-fondo: #f5f5f5;
+  --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --sombra-media: 0 6px 16px rgba(0, 0, 0, 0.15);
+  --transicion: all 0.3s ease;
+  --radio-borde: 12px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+}
+
+.pagina-principal {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeIn 1s ease-out;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  color: var(--color-primario);
+  margin-bottom: 0.5rem;
+}
+
+.subtitulo {
+  font-size: 1.2rem;
+  color: var(--color-secundario);
+  font-weight: 300;
+}
+
+.introduccion {
+  background-color: white;
+  padding: 2rem;
+  border-radius: var(--radio-borde);
+  box-shadow: var(--sombra-suave);
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.1rem;
+  text-align: center;
+  animation: fadeIn 1s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.contenedor-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.tarjeta {
+  background-color: white;
+  border-radius: var(--radio-borde);
+  box-shadow: var(--sombra-media);
+  padding: 1.5rem;
+  color: var(--color-texto-claro);
+  transition: var(--transicion);
+  opacity: 0;
+  transform: translateX(-30px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tarjeta.visible {
+  animation: slideIn 0.8s ease-out forwards;
+}
+
+.tarjeta h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.tarjeta p {
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.subtemas {
+  margin-top: auto;
+}
+
+.subtema {
+  margin-bottom: 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.subtema summary {
+  padding: 0.8rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transicion);
+}
+
+.subtema summary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.subtema p {
+  padding: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.seccion-interactiva {
+  background-color: white;
+  padding: 2rem;
+  border-radius: var(--radio-borde);
+  box-shadow: var(--sombra-suave);
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.seccion-interactiva h2 {
+  color: var(--color-primario);
+  margin-bottom: 1.5rem;
+}
+
+.contenido-interactivo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.interactivo-placeholder {
+  background-color: #f1f1f1;
+  border-radius: var(--radio-borde);
+  padding: 2rem;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: var(--transicion);
+}
+
+.interactivo-placeholder:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--sombra-media);
+}
+
+.interactivo-placeholder h3 {
+  color: var(--color-primario);
+  margin-bottom: 1rem;
+}
+
+.footer {
+  margin-top: 4rem;
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid #ddd;
+  color: #666;
+}
+
+.referencias {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+  .pagina-principal {
+    padding: 1rem;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .contenedor-tarjetas {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animación de hover para las tarjetas */
+.tarjeta:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para las tarjetas cuando se hace hover */
+.tarjeta:hover .subtema summary {
+  background-color: rgba(255, 255, 255, 0.2);
+}

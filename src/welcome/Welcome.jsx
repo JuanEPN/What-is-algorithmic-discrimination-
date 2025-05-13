@@ -11,10 +11,7 @@ const Welcome = () => {
     const navigate = useNavigate();
 
     const onHandleButtonNext = () => {
-
-        console.log("Navegndo a /principal...")
         navigate("/principal");
-
     } 
 
     return (
@@ -30,7 +27,7 @@ const Welcome = () => {
 
             <>
                 <h1 className="welcome-tittle">¿Qué es la Discriminación Algorítmica?</h1>
-                <p className="welcome-text">Bienvenido! Quieres saber más sobre este tema? Unde el boton y conozcamoslo</p>
+                <p className="welcome-text">Bienvenido! ¿Quieres saber más sobre este tema? Presiona el boton para que lo descrubramos juntos!</p>
                 <button className="welcome-button" onClick={onHandleButtonNext}>Adelante!</button>
 
             </>

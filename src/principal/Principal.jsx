@@ -1,18 +1,84 @@
 import "./Principal.css";
-import React, { useEffect, useState } from "react";
+import ExpertVideos from "../components/ExpertVideos";
+import { useEffect, useState, useRef } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, CameraControls } from "@react-three/drei";
+import Scenario from "./models-3d/Scenario";
+import Model1 from "./models-3d/Model1";
+import Model2 from "./models-3d/Model2";
+import Model3 from "./models-3d/Model3";
+import * as THREE from "three";
+import { useFrame } from "@react-three/fiber";
 
+const CameraAnimation = ({ cameraState, controlsRef }) => {
+    useFrame(({ camera }, delta) => {
+        if (!cameraState.isAnimating || !controlsRef.current) return;
+
+        camera.position.lerp(cameraState.targetPosition, delta * 10);
+        const currentLookAt = new THREE.Vector3();
+        currentLookAt.lerp(cameraState.targetLookAt, delta * 10);
+        controlsRef.current.target.copy(currentLookAt);
+
+        if (
+            camera.position.distanceTo(cameraState.targetPosition) < 0.5 &&
+            currentLookAt.distanceTo(cameraState.targetLookAt) < 0.5
+        ) {
+            cameraState.isAnimating = false;
+        }
+    });
+
+    return null; // No renderiza nada, solo ejecuta `useFrame`
+};
 
 const Principal = () => {
-
+    const [selectedModel, setSelectedModel] = useState(null);
+    const [modelInfo, setModelInfo] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
+    const [cameraState, setCameraState] = useState({
+        targetPosition: null,
+        targetLookAt: null,
+        isAnimating: false,
+    });
+
+    const controlsRef = useRef();
+
+    const modelCameraSettings = {
+        1: { position: new THREE.Vector3(5, 5, 5), lookAt: new THREE.Vector3(-5, 0, -5) },
+        2: { position: new THREE.Vector3(5, 5, 5), lookAt: new THREE.Vector3(-5, 0, 0) },
+        3: { position: new THREE.Vector3(5, 5, 5), lookAt: new THREE.Vector3(1, 0, -1) },
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsVisible(true);
         }, 300);
-
         return () => clearTimeout(timer);
     }, []);
+
+    const handleModelClick = (event, modelId) => {
+        event.stopPropagation();
+        if (selectedModel === modelId) {
+            setCameraState({ isAnimating: false });
+            return;
+        }
+
+        const settings = modelCameraSettings[modelId];
+        setCameraState({
+            targetPosition: settings.position,
+            targetLookAt: settings.lookAt,
+            isAnimating: true,
+        });
+
+        setSelectedModel(modelId);
+
+        const info = {
+            1: { title: "Modelo 1", description: "Este modelo representa que las IAs deben ayudar a cuidar a las personas, teniéndolas entre sus brazos de una forma cuidadosa." },
+            2: { title: "Modelo 2", description: "Este modelo representa la justicia + IA, mostrando un juez justo con una balanza." },
+            3: { title: "Modelo 3", description: "Este modelo representa la responsabilidad ética de las IA con las minorías desde una perspectiva estructural con impacto visual." }
+        }[modelId];
+
+        setModelInfo(info);
+    };
 
     const secciones = [
         {
@@ -27,7 +93,7 @@ const Principal = () => {
                 {
                     titulo: "Algoritmos discriminatorios",
                     contenido: "Modelos matemáticos que, incluso sin intención explícita, amplifican desigualdades existentes. Investigaciones de la Universidad de Stanford (2023) revelaron que los algoritmos de puntuación crediticia asignan calificaciones 15-30% más bajas a personas de minorías raciales con historiales financieros similares a los de otros grupos."
-                }
+                },
             ],
             colorFondo: "#1a237e"
         },
@@ -140,50 +206,41 @@ const Principal = () => {
                 </p>
             </div>
 
-            <div className="contenedor-tarjetas">
-                {secciones.map((seccion, index) => (
-                    <div
-                        key={seccion.id}
-                        className={`tarjeta ${isVisible ? 'visible' : ''}`}
-                        style={{
-                            animationDelay: `${index * 0.2}s`,
-                            backgroundColor: seccion.colorFondo,
-                        }}
-                    >
-                        <h2>{seccion.titulo}</h2>
-                        <p>{seccion.contenido}</p>
-                        <div className="subtemas">
-                            {seccion.subtemas.map((subtema, i) => (
-                                <details key={i} className="subtema">
-                                    <summary>{subtema.titulo}</summary>
-                                    <p>{subtema.contenido}</p>
-                                </details>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
-
             <div className="seccion-interactiva">
-                <h2>Explora nuestro contenido interactivo</h2>
+                <h2>Explora nuestro contenido interactivo: 
+                    <span className="subtitulo-interactivo"> haz clic en los modelos 3D y obtendras una descripción</span>
+                </h2>
                 <div className="contenido-interactivo">
-                    <div className="interactivo-placeholder">
-                        <h3>Modelos 3D</h3>
-                        <p>Próximamente: Visualización interactiva del impacto de sesgos algorítmicos</p>
-                    </div>
+                    <Canvas className="modelo1" shadows camera={{ position: [15, 15, 15], fov: 20 }}>
+                        <CameraControls ref={controlsRef} />
+                        <OrbitControls ref={controlsRef} enableZoom minDistance={5} maxDistance={20} target={[0, 0.5, 0]} />
+                        <ambientLight intensity={0.5} />
+                        <directionalLight position={[10, 10, 5]} intensity={1} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
+                        <pointLight position={[10, 10, 10]} intensity={0.5} color="blue" />
+                        <Scenario />
+                        <Model1 position={[-5, -0.5, -5]} rotation={[0, Math.PI / 4, 0]} scale={2} onClick={(e) => handleModelClick(e, 1)} />
+                        <Model2 position={[-5, -0.5, 0]} rotation={[0, Math.PI / 4, 0]} scale={2} onClick={(e) => handleModelClick(e, 2)} />
+                        <Model3 position={[1, -0.1, -1]} rotation={[0, Math.PI, 0]} scale={2} onClick={(e) => handleModelClick(e, 3)} />
+                        {/* Se añade el componente que maneja `useFrame` dentro de `<Canvas>` */}
+                        <CameraAnimation cameraState={cameraState} controlsRef={controlsRef} />
+                    </Canvas>
+                    {modelInfo && (
+                        <div className="model-info">
+                            <h3>{modelInfo.title}</h3>
+                            <p>{modelInfo.description}</p>
+                        </div>
+                    )}
                     <div className="interactivo-placeholder">
                         <h3>Videos</h3>
-                        <p>Próximamente: Entrevistas con expertos y demostraciones de sesgos en IA</p>
+                        <ExpertVideos />
                     </div>
                 </div>
             </div>
 
             <footer className="footer">
-                <p>© 2025 - Proyecto de Investigación sobre Sesgos Raciales en IA</p>
+                <p>© 2025 - Juan Esteban Pereira - Universidad del Valle - Proyecto de Investigación sobre Sesgos Raciales en IA</p>
                 <div className="referencias">
-                    <p>
-                        Fuentes: MIT Media Lab, Stanford NLP Group, AI Now Institute, ProPublica, NIST, Brookings Institution, IEEE, Algorithmic Justice League, MIT Tech Review
-                    </p>
+                    <p>Fuentes: MIT Media Lab, Stanford NLP Group, AI Now Institute, ProPublica, NIST, Brookings Institution, IEEE, Algorithmic Justice League, MIT Tech Review</p>
                 </div>
             </footer>
         </div>
